@@ -81,7 +81,11 @@ function BookingModal({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!selected) return;
+    if (!selected) {
+      setErrorMsg("希望の開始時刻を選択してください（上の時間グリッドから選んでください）");
+      setStatus("error");
+      return;
+    }
     setStatus("submitting");
     try {
       const res = await fetch("/api/bookings", {
@@ -195,7 +199,7 @@ function BookingModal({
           {status === "error" && <p className="text-red-600 text-sm">{errorMsg}</p>}
           <button
             type="submit"
-            disabled={!selected || status === "submitting"}
+            disabled={status === "submitting"}
             className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-40 transition-colors"
           >
             {status === "submitting" ? "送信中..." : "予約を確定する"}
