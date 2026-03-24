@@ -130,13 +130,20 @@ export default function DashboardPage() {
     setSlotError("");
     setSlotSuccess("");
 
-    const startDateTime = `${newSlot.startDate}T${newSlot.startTime}`;
-    const endDateTime = repeatMode
-      ? `${newSlot.startDate}T${newSlot.endTime}`
-      : `${newSlot.endDate}T${newSlot.endTime}`;
+    const startDateTime = new Date(`${newSlot.startDate}T${newSlot.startTime}`).toISOString();
+    const endDateTime = new Date(
+      repeatMode
+        ? `${newSlot.startDate}T${newSlot.endTime}`
+        : `${newSlot.endDate}T${newSlot.endTime}`
+    ).toISOString();
+
+    // repeatUntil は「その日の終わり（現地時間）」としてISOに変換
+    const repeatUntilISO = newSlot.repeatUntil
+      ? (() => { const d = new Date(`${newSlot.repeatUntil}T23:59:59`); return d.toISOString(); })()
+      : undefined;
 
     const body = repeatMode
-      ? { startTime: startDateTime, endTime: endDateTime, repeatUntil: newSlot.repeatUntil }
+      ? { startTime: startDateTime, endTime: endDateTime, repeatUntil: repeatUntilISO }
       : { startTime: startDateTime, endTime: endDateTime };
 
     const res = await fetch("/api/availability", {
@@ -166,8 +173,8 @@ export default function DashboardPage() {
   async function addSlotFromCalendar(day: Date, startMin: number, endMin: number) {
     const pad = (n: number) => String(n).padStart(2, "0");
     const dateStr = `${day.getFullYear()}-${pad(day.getMonth() + 1)}-${pad(day.getDate())}`;
-    const startTime = `${dateStr}T${pad(Math.floor(startMin / 60))}:${pad(startMin % 60)}`;
-    const endTime = `${dateStr}T${pad(Math.floor(endMin / 60))}:${pad(endMin % 60)}`;
+    const startTime = new Date(`${dateStr}T${pad(Math.floor(startMin / 60))}:${pad(startMin % 60)}`).toISOString();
+    const endTime = new Date(`${dateStr}T${pad(Math.floor(endMin / 60))}:${pad(endMin % 60)}`).toISOString();
     const res = await fetch("/api/availability", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

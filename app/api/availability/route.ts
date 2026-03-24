@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(availability, { status: 201 });
   }
 
+  // repeatUntil はクライアント側でISO変換済み
   const until = new Date(repeatUntil);
-  until.setHours(23, 59, 59, 999);
   const durMs = end.getTime() - start.getTime();
   const slots: { startTime: Date; endTime: Date }[] = [];
   const cur = new Date(start);
