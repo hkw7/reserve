@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsx:*)",
+      "Bash(npm install:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npm run:*)",
+      "Bash(npx tsc:*)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(cmd /c \"tasklist | findstr node\")",
+      "Bash(cmd /c \"netstat -ano | findstr :3002\")",
+      "Bash(curl:*)",
+      "Bash(cmd /c \"netstat -ano | findstr LISTENING\")"
+    ]
+  }
+}
