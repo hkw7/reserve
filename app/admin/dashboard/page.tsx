@@ -334,7 +334,7 @@ export default function DashboardPage() {
                     <TimeSelect
                       required
                       value={newSlot.startTime}
-                      onChange={(v) => setNewSlot({ ...newSlot, startTime: v })}
+                      onChange={(v) => setNewSlot({ ...newSlot, startTime: v, endTime: v })}
                     />
                   </div>
                 </div>
