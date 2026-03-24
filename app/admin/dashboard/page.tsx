@@ -314,6 +314,7 @@ export default function DashboardPage() {
                   毎日繰り返し
                 </label>
               </div>
+              <p className="text-xs text-gray-400 mb-3">カレンダーは登録済みの時間帯に応じて表示範囲が変わります。早朝・深夜など表示範囲外の時間を登録する場合はこちらのフォームをご利用ください。</p>
               <form onSubmit={addSlot} className="flex flex-col gap-3">
                 {/* 開始 */}
                 <div className="flex gap-2">
