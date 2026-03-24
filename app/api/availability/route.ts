@@ -28,7 +28,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "終了日時は開始日時より後にしてください" }, { status: 400 });
 
   if (!repeatUntil) {
-    const availability = await prisma.availability.create({ data: { startTime: start, endTime: end } });
+    // 重複する既存スロットを検索（予約なしのもののみ結合対象）
+    const overlapping = await prisma.availability.findMany({
+      where: { startTime: { lt: end }, endTime: { gt: start } },
+      include: { bookings: { select: { id: true } } },
+    });
+    const mergeable = overlapping.filter((s) => s.bookings.length === 0);
+
+    const mergedStart = mergeable.reduce((min, s) => (s.startTime < min ? s.startTime : min), start);
+    const mergedEnd = mergeable.reduce((max, s) => (s.endTime > max ? s.endTime : max), end);
+
+    const availability = await prisma.$transaction(async (tx) => {
+      if (mergeable.length > 0) {
+        await tx.availability.deleteMany({ where: { id: { in: mergeable.map((s) => s.id) } } });
+      }
+      return tx.availability.create({ data: { startTime: mergedStart, endTime: mergedEnd } });
+    });
     return NextResponse.json(availability, { status: 201 });
   }
 
