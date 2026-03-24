@@ -83,21 +83,26 @@ function BookingModal({
     e.preventDefault();
     if (!selected) return;
     setStatus("submitting");
-    const res = await fetch("/api/bookings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        availabilityId: avail.id,
-        startTime: selected.start.toISOString(),
-        endTime: selected.end.toISOString(),
-        ...form,
-      }),
-    });
-    if (res.ok) {
-      onSuccess(selected);
-    } else {
-      const data = await res.json();
-      setErrorMsg(data.error || "エラーが発生しました");
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          availabilityId: avail.id,
+          startTime: selected.start.toISOString(),
+          endTime: selected.end.toISOString(),
+          ...form,
+        }),
+      });
+      if (res.ok) {
+        onSuccess(selected);
+      } else {
+        const data = await res.json().catch(() => ({ error: "サーバーエラーが発生しました" }));
+        setErrorMsg(data.error || "エラーが発生しました");
+        setStatus("error");
+      }
+    } catch {
+      setErrorMsg("通信エラーが発生しました。もう一度お試しください。");
       setStatus("error");
     }
   }
@@ -154,10 +159,12 @@ function BookingModal({
             </div>
           )}
 
-          {selected && (
+          {selected ? (
             <p className="mt-2 text-sm text-green-700 font-medium">
               選択中: {fmtTime(selected.start)} 〜 {fmtTime(selected.end)}
             </p>
+          ) : (
+            <p className="mt-2 text-sm text-amber-600">上の時間から希望の開始時刻を選択してください</p>
           )}
         </div>
 
