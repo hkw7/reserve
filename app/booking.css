@@ -1,25 +1,25 @@
 /* ================================================================
-   BOOKING PAGE — "Noir Salon" Luxury Aesthetic
+   BOOKING PAGE — "Atelier Clair" Luxury Light Aesthetic
    ================================================================ */
 
 :root {
-  --s-bg: #0d0b09;
-  --s-surface: #161310;
-  --s-surface2: #1e1b17;
-  --s-border: #2a2520;
-  --s-border2: #352f28;
-  --s-gold: #c49a52;
-  --s-gold-hover: #d4ac6a;
-  --s-gold-dim: #8a6c38;
-  --s-gold-faint: rgba(196, 154, 82, 0.08);
-  --s-text: #f0ebe3;
-  --s-text2: #9a9085;
-  --s-text3: #5a5248;
-  --s-success: #7ab895;
-  --s-error: #c4745a;
-  --s-today-bg: rgba(196, 154, 82, 0.05);
-  --s-sat: #7a9aaf;
-  --s-sun: #c47a7a;
+  --s-bg: #f7f3ee;
+  --s-surface: #ffffff;
+  --s-surface2: #fdfaf6;
+  --s-border: #e4dbd0;
+  --s-border2: #d0c5b8;
+  --s-gold: #9a6f2e;
+  --s-gold-hover: #7a5520;
+  --s-gold-dim: #b8924a;
+  --s-gold-faint: rgba(154, 111, 46, 0.07);
+  --s-text: #1c1814;
+  --s-text2: #5a4e44;
+  --s-text3: #9a8c80;
+  --s-success: #3a7a5c;
+  --s-error: #a04030;
+  --s-today-bg: rgba(154, 111, 46, 0.06);
+  --s-sat: #3a6080;
+  --s-sun: #903030;
   --f-display: var(--font-cormorant), Georgia, serif;
   --f-body: var(--font-geist-sans), system-ui, sans-serif;
 }
@@ -42,7 +42,7 @@
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.025;
+  opacity: 0.04;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
   background-size: 200px 200px;
 }
@@ -119,12 +119,12 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--s-border) 15%,
+    var(--s-border2) 15%,
     var(--s-gold-dim) 50%,
-    var(--s-border) 85%,
+    var(--s-border2) 85%,
     transparent 100%
   );
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 /* ── CONTENT ───────────────────────────────────────────────────── */
@@ -429,25 +429,25 @@
 .salon-slot.available {
   background: linear-gradient(
     160deg,
-    rgba(196, 154, 82, 0.2) 0%,
-    rgba(184, 135, 62, 0.12) 100%
+    rgba(154, 111, 46, 0.14) 0%,
+    rgba(184, 146, 74, 0.08) 100%
   );
-  border: 1px solid rgba(196, 154, 82, 0.28);
+  border: 1px solid rgba(154, 111, 46, 0.35);
   cursor: pointer;
 }
 
 .salon-slot.available:hover {
   background: linear-gradient(
     160deg,
-    rgba(196, 154, 82, 0.35) 0%,
-    rgba(184, 135, 62, 0.25) 100%
+    rgba(154, 111, 46, 0.25) 0%,
+    rgba(184, 146, 74, 0.16) 100%
   );
-  border-color: rgba(196, 154, 82, 0.55);
-  box-shadow: 0 0 12px rgba(196, 154, 82, 0.1);
+  border-color: rgba(154, 111, 46, 0.6);
+  box-shadow: 0 2px 8px rgba(154, 111, 46, 0.12);
 }
 
 .salon-slot.full {
-  background: rgba(35, 30, 25, 0.4);
+  background: rgba(220, 210, 200, 0.35);
   border: 1px solid var(--s-border);
   cursor: default;
 }
@@ -456,7 +456,7 @@
   font-size: 0.62rem;
   font-weight: 400;
   line-height: 1.2;
-  color: var(--s-gold-hover);
+  color: var(--s-gold);
   display: block;
   white-space: nowrap;
   overflow: hidden;
@@ -468,13 +468,14 @@
 .salon-slot-sub {
   font-size: 0.52rem;
   letter-spacing: 0.08em;
-  color: rgba(196, 154, 82, 0.5);
+  color: var(--s-gold-dim);
+  opacity: 0.7;
 }
 
 .salon-slot.full .salon-slot-sub { color: var(--s-text3); }
 
 .salon-booked-overlay {
-  background: rgba(0, 0, 0, 0.28);
+  background: rgba(255, 255, 255, 0.45);
   pointer-events: none;
 }
 
@@ -516,7 +517,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(28, 24, 20, 0.45);
   backdrop-filter: blur(6px);
   animation: salon-fadein 0.2s ease-out;
 }
@@ -565,9 +566,9 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 1px;
+  height: 2px;
   background: linear-gradient(90deg, transparent, var(--s-gold-dim), transparent);
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .salon-modal-close {
@@ -767,8 +768,8 @@
 
 .salon-input {
   width: 100%;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--s-border2);
+  background: #faf8f5;
+  border: 1px solid var(--s-border);
   color: var(--s-text);
   font-family: var(--f-body);
   font-size: 0.78rem;
