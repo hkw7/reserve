@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendBookingConfirmation, sendBookingNotificationToAdmin } from "@/lib/email";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -16,10 +17,28 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  // レートリミット（10分間に5件まで）
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  const { allowed, retryAfterSec } = checkRateLimit(ip);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "リクエストが多すぎます。しばらく時間をおいてから再度お試しください。" },
+      { status: 429, headers: { "Retry-After": String(retryAfterSec) } }
+    );
+  }
+
   const { availabilityId, startTime, endTime, name, email, purpose } = await req.json();
 
   if (!availabilityId || !startTime || !endTime || !name || !email || !purpose)
     return NextResponse.json({ error: "必須項目が不足しています" }, { status: 400 });
+
+  // 入力値の最大長バリデーション
+  if (name.length > 100)
+    return NextResponse.json({ error: "お名前は100文字以内で入力してください" }, { status: 400 });
+  if (email.length > 254)
+    return NextResponse.json({ error: "メールアドレスが長すぎます" }, { status: 400 });
+  if (purpose.length > 1000)
+    return NextResponse.json({ error: "目的・用件は1000文字以内で入力してください" }, { status: 400 });
 
   const start = new Date(startTime);
   const end = new Date(endTime);
