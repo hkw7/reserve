@@ -94,11 +94,11 @@
 .salon-title {
   font-family: var(--f-display);
   font-weight: 400;
-  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
   line-height: 1;
   letter-spacing: -0.01em;
   color: var(--s-text);
-  margin: 0 0 16px;
+  margin: 0 0 12px;
 }
 
 .salon-title em {
