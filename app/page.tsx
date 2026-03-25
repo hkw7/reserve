@@ -489,7 +489,7 @@ export default function BookingPage() {
     <main className="min-h-screen bg-slate-50">
       {/* ヒーローセクション */}
       <div className="bg-gradient-to-br from-indigo-600 via-indigo-500 to-blue-500 text-white">
-        <div className="max-w-4xl mx-auto px-4 py-12 sm:py-16">
+        <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
           <p className="text-indigo-200 text-sm font-medium tracking-wider uppercase mb-2">Online Booking</p>
           <h1 className="text-3xl sm:text-4xl font-bold mb-3 leading-tight">
             ご予約はこちらから
