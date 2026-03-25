@@ -483,17 +483,16 @@ export default function BookingPage() {
 
       {/* ヘッダー */}
       <header className="salon-header">
-        <div className="salon-header-inner">
-          <div>
-            <h1 className="salon-title">L&rsquo;Atelier</h1>
-            <p className="salon-subtitle">ご予約・スケジュール調整</p>
-          </div>
-          <div className="salon-status">
-            <span className="salon-status-dot" />
-            <span className="salon-status-text">受付中</span>
-          </div>
+        <div className="salon-header-eyebrow">
+          <span className="salon-status-dot" />
+          受付中
         </div>
-        <div className="salon-header-rule" />
+        <h1 className="salon-title">
+          ご<em>予約</em>
+        </h1>
+        <p className="salon-subtitle">
+          日時を選択してスケジュールを調整できます
+        </p>
       </header>
 
       {/* コンテンツ */}
