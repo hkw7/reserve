@@ -33,12 +33,6 @@ function fmtDate(iso: string | Date) {
   });
 }
 
-function fmtDateTime(iso: string | Date) {
-  return new Date(iso).toLocaleString("ja-JP", {
-    month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit",
-  });
-}
-
 function getSubSlots(avail: Availability, durationMin: number): SubSlot[] {
   const slots: SubSlot[] = [];
   const durMs = durationMin * 60_000;
@@ -116,42 +110,39 @@ function BookingModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full sm:max-w-lg max-h-[92vh] overflow-y-auto">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-md max-h-[92vh] overflow-y-auto">
+
         {/* モーダルヘッダー */}
-        <div className="bg-gradient-to-r from-indigo-600 to-blue-500 px-6 pt-6 pb-8 rounded-t-3xl sm:rounded-t-2xl">
+        <div className="flex items-start justify-between px-5 pt-5 pb-4 border-b border-gray-100">
+          <div>
+            <p className="text-xs text-indigo-500 font-medium mb-0.5">{fmtDate(avail.startTime)}</p>
+            <h2 className="text-base font-semibold text-gray-900">
+              {fmtTime(avail.startTime)} 〜 {fmtTime(avail.endTime)}
+            </h2>
+          </div>
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-white/70 hover:text-white text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors"
+            className="text-gray-400 hover:text-gray-600 w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-lg leading-none"
           >
-            ✕
+            ×
           </button>
-          <p className="text-indigo-200 text-xs font-medium uppercase tracking-widest mb-1">予約日時</p>
-          <h2 className="text-white text-xl font-bold">{fmtDate(avail.startTime)}</h2>
-          <p className="text-indigo-100 text-sm mt-0.5">
-            {fmtTime(avail.startTime)} 〜 {fmtTime(avail.endTime)}
-          </p>
         </div>
 
-        <div className="px-6 py-5 -mt-3">
+        <div className="px-5 py-4 space-y-4">
           {/* ステップ1: 時間選択 */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-4">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center">1</span>
-              <span className="text-sm font-semibold text-gray-700">希望の時間を選択</span>
-            </div>
-
-            {/* 時間選択 */}
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">1. 時間を選択</p>
             <div className="flex flex-wrap gap-1.5 mb-3">
               {DURATIONS.filter((d) => d <= totalMin).map((d) => (
                 <button
                   key={d}
                   type="button"
                   onClick={() => setDuration(d)}
-                  className={`px-3 py-1 rounded-full text-sm font-medium border transition-all ${
+                  className={`px-3 py-1 rounded-md text-xs font-medium border transition-colors ${
                     duration === d
-                      ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
-                      : "bg-gray-50 text-gray-600 border-gray-200 hover:border-indigo-300 hover:bg-indigo-50"
+                      ? "bg-indigo-600 text-white border-indigo-600"
+                      : "bg-white text-gray-600 border-gray-200 hover:border-indigo-300 hover:text-indigo-600"
                   }`}
                 >
                   {d}分
@@ -160,18 +151,18 @@ function BookingModal({
             </div>
 
             {subSlots.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-4">この時間帯に空きがありません</p>
+              <p className="text-sm text-gray-400 text-center py-6">この時間帯に空きがありません</p>
             ) : (
-              <div className="grid grid-cols-4 gap-1.5 max-h-44 overflow-y-auto pr-1">
+              <div className="grid grid-cols-4 gap-1.5 max-h-40 overflow-y-auto">
                 {subSlots.map((s, i) => (
                   <button
                     key={i}
                     type="button"
                     onClick={() => setSelected(s)}
-                    className={`py-2 rounded-xl text-sm font-medium border transition-all ${
+                    className={`py-2 rounded-md text-xs font-medium border transition-colors ${
                       selected?.start.getTime() === s.start.getTime()
-                        ? "bg-indigo-600 text-white border-indigo-600 shadow-sm scale-105"
-                        : "bg-gray-50 text-gray-700 border-gray-100 hover:border-indigo-300 hover:bg-indigo-50"
+                        ? "bg-indigo-600 text-white border-indigo-600"
+                        : "bg-white text-gray-700 border-gray-200 hover:border-indigo-300 hover:text-indigo-600"
                     }`}
                   >
                     {fmtTime(s.start)}
@@ -180,70 +171,60 @@ function BookingModal({
               </div>
             )}
 
-            {selected ? (
-              <div className="mt-3 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2 flex items-center gap-2">
-                <span className="text-indigo-500 text-base">✓</span>
-                <span className="text-indigo-700 text-sm font-medium">
-                  {fmtTime(selected.start)} 〜 {fmtTime(selected.end)}（{duration}分）
-                </span>
+            {selected && (
+              <div className="mt-2 flex items-center gap-1.5 text-xs text-indigo-600 bg-indigo-50 rounded-md px-3 py-1.5">
+                <span>✓</span>
+                <span>{fmtTime(selected.start)} 〜 {fmtTime(selected.end)}（{duration}分）</span>
               </div>
-            ) : (
-              <p className="mt-3 text-xs text-amber-600 bg-amber-50 rounded-xl px-3 py-2">
-                上のグリッドから開始時刻を選択してください
-              </p>
             )}
           </div>
 
           {/* ステップ2: 情報入力 */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center">2</span>
-              <span className="text-sm font-semibold text-gray-700">お客様情報を入力</span>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-3">
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">2. お客様情報</p>
+            <form onSubmit={handleSubmit} className="space-y-2.5">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">お名前 *</label>
+                <label className="block text-xs text-gray-500 mb-1">お名前 <span className="text-red-400">*</span></label>
                 <input
                   required
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400"
                   placeholder="山田 太郎"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">メールアドレス *</label>
+                <label className="block text-xs text-gray-500 mb-1">メールアドレス <span className="text-red-400">*</span></label>
                 <input
                   required
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400"
                   placeholder="example@example.com"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">目的・用件 *</label>
+                <label className="block text-xs text-gray-500 mb-1">目的・用件 <span className="text-red-400">*</span></label>
                 <textarea
                   required
                   value={form.purpose}
                   onChange={(e) => setForm({ ...form, purpose: e.target.value })}
                   rows={2}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent bg-gray-50 focus:bg-white transition-colors resize-none"
+                  className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 resize-none"
                   placeholder="ご相談の内容をお書きください"
                 />
               </div>
               {status === "error" && (
-                <p className="text-red-600 text-sm bg-red-50 border border-red-100 rounded-xl px-3 py-2">{errorMsg}</p>
+                <p className="text-xs text-red-500 bg-red-50 rounded-md px-3 py-2">{errorMsg}</p>
               )}
               <button
                 type="submit"
                 disabled={status === "submitting"}
-                className="w-full bg-gradient-to-r from-indigo-600 to-blue-500 text-white py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-blue-600 disabled:opacity-40 transition-all shadow-md hover:shadow-lg active:scale-[0.98]"
+                className="w-full bg-indigo-600 text-white py-2.5 rounded-md text-sm font-medium hover:bg-indigo-700 disabled:opacity-40 transition-colors"
               >
-                {status === "submitting" ? "送信中..." : "予約を確定する →"}
+                {status === "submitting" ? "送信中..." : "予約を確定する"}
               </button>
             </form>
           </div>
@@ -315,61 +296,69 @@ function BookingCalendar({
   const nextWeek = () => setWeekStart((d) => { const n = new Date(d); n.setDate(d.getDate() + 7); return n; });
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden select-none">
-      {/* カレンダーナビゲーション */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
+    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden select-none">
+      {/* ナビゲーション */}
+      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100">
+        <span className="text-sm font-medium text-gray-700 mr-1">
+          {weekStart.toLocaleDateString("ja-JP", { year: "numeric", month: "long" })}
+        </span>
         <button
           onClick={prevWeek}
-          className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 transition-colors text-sm"
+          className="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors text-base"
         >
           ‹
         </button>
         <button
           onClick={() => setWeekStart(getMonday(new Date()))}
-          className="px-3 py-1 rounded-full border border-gray-200 text-gray-500 text-xs hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 transition-colors"
+          className="px-2.5 py-0.5 rounded-md border border-gray-200 text-gray-500 text-xs hover:bg-gray-50 transition-colors"
         >
           今週
         </button>
         <button
           onClick={nextWeek}
-          className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 transition-colors text-sm"
+          className="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors text-base"
         >
           ›
         </button>
-        <span className="ml-auto text-sm font-medium text-gray-600">
-          {weekStart.toLocaleDateString("ja-JP", { year: "numeric", month: "long" })}
-        </span>
+        <div className="ml-auto flex items-center gap-3 text-xs text-gray-400">
+          <span className="flex items-center gap-1">
+            <span className="w-2.5 h-2.5 rounded-sm bg-indigo-400 inline-block" />予約可能
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-2.5 h-2.5 rounded-sm bg-gray-200 inline-block" />満席
+          </span>
+        </div>
       </div>
 
       {/* 曜日ヘッダー */}
-      <div className="grid border-b border-gray-100" style={{ gridTemplateColumns: "44px repeat(7, 1fr)" }}>
+      <div className="grid border-b border-gray-100" style={{ gridTemplateColumns: "40px repeat(7, 1fr)" }}>
         <div className="border-r border-gray-100" />
         {days.map((day, i) => {
           const isToday = day.getTime() === today.getTime();
           const isSat = i === 5, isSun = i === 6;
-          const lc = isSun ? "text-red-400" : isSat ? "text-blue-400" : "text-gray-400";
-          const nc = isToday
-            ? "bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center mx-auto text-sm font-bold"
-            : isSun ? "text-red-500 font-semibold" : isSat ? "text-blue-500 font-semibold" : "text-gray-700 font-semibold";
+          const dayColor = isSun ? "text-red-500" : isSat ? "text-blue-500" : "text-gray-500";
+          const numClass = isToday
+            ? "bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center mx-auto text-xs font-bold"
+            : `text-xs font-semibold ${isSun ? "text-red-600" : isSat ? "text-blue-600" : "text-gray-800"}`;
           return (
-            <div key={i} className={`text-center py-2 border-l border-gray-100 ${isToday ? "bg-indigo-50/50" : ""}`}>
-              <div className={`text-[11px] font-medium ${lc}`}>{DAY_LABELS[i]}</div>
-              <div className="text-sm mt-0.5"><span className={nc}>{day.getDate()}</span></div>
+            <div key={i} className={`text-center py-1.5 border-l border-gray-100 ${isToday ? "bg-indigo-50/30" : ""}`}>
+              <div className={`text-[10px] font-medium ${dayColor}`}>{DAY_LABELS[i]}</div>
+              <div className="mt-0.5"><span className={numClass}>{day.getDate()}</span></div>
             </div>
           );
         })}
       </div>
 
       {/* タイムグリッド */}
-      <div ref={scrollRef} className="overflow-y-auto" style={{ maxHeight: 520 }}>
+      <div ref={scrollRef} className="overflow-y-auto" style={{ maxHeight: 480 }}>
         {weekSlots.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-4xl mb-3">📅</p>
+          <div className="text-center py-16">
+            <p className="text-gray-300 text-3xl mb-2">—</p>
             <p className="text-gray-400 text-sm">この週に空き時間はありません</p>
             <p className="text-gray-300 text-xs mt-1">前後の週をご確認ください</p>
           </div>
         ) : (
-          <div className="grid" style={{ gridTemplateColumns: "44px repeat(7, 1fr)", height: totalHeight }}>
+          <div className="grid" style={{ gridTemplateColumns: "40px repeat(7, 1fr)", height: totalHeight }}>
             <div className="relative border-r border-gray-100">
               {hours.map((h) => (
                 <div
@@ -377,7 +366,7 @@ function BookingCalendar({
                   className="absolute w-full text-right pr-2 text-[10px] text-gray-300 leading-none"
                   style={{ top: (h - minHour) * HOUR_HEIGHT - 5 }}
                 >
-                  {String(h).padStart(2, "0")}:00
+                  {String(h).padStart(2, "0")}
                 </div>
               ))}
             </div>
@@ -406,18 +395,18 @@ function BookingCalendar({
                       <div key={avail.id} className="absolute left-0.5 right-0.5" style={{ top, height, zIndex: 1 }}>
                         <button
                           onClick={() => hasFree && onSelect(avail)}
-                          className={`absolute inset-0 rounded-lg px-1.5 py-1 text-left text-[11px] overflow-hidden transition-all ${
+                          className={`absolute inset-0 rounded-md px-1.5 py-1 text-left text-[11px] overflow-hidden transition-colors ${
                             hasFree
-                              ? "bg-gradient-to-b from-emerald-400 to-emerald-500 border border-emerald-400 text-white hover:from-emerald-500 hover:to-emerald-600 shadow-sm hover:shadow-md cursor-pointer active:scale-[0.98]"
+                              ? "bg-indigo-500 border border-indigo-400 text-white hover:bg-indigo-600 cursor-pointer"
                               : "bg-gray-100 border border-gray-200 text-gray-400 cursor-default"
                           }`}
                         >
-                          <span className="block font-semibold leading-tight truncate">
+                          <span className="block font-medium leading-tight truncate">
                             {fmtTime(avail.startTime)}
                             {height >= 36 && <>{" – "}{fmtTime(avail.endTime)}</>}
                           </span>
                           {height >= 44 && hasFree && (
-                            <span className="block text-[10px] text-emerald-100 mt-0.5">タップして予約</span>
+                            <span className="block text-[10px] text-indigo-200 mt-0.5">タップして予約</span>
                           )}
                           {height >= 44 && !hasFree && (
                             <span className="block text-[10px] text-gray-400">満席</span>
@@ -430,7 +419,7 @@ function BookingCalendar({
                           return (
                             <div
                               key={b.id}
-                              className="absolute left-0 right-0 bg-white/30 pointer-events-none"
+                              className="absolute left-0 right-0 bg-white/25 pointer-events-none"
                               style={{ top: relTop, height: bp.height, zIndex: 2 }}
                             />
                           );
@@ -443,17 +432,6 @@ function BookingCalendar({
             })}
           </div>
         )}
-      </div>
-
-      {/* 凡例 */}
-      <div className="flex gap-4 px-4 py-2.5 border-t border-gray-100 text-xs text-gray-400">
-        <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-emerald-400 inline-block" />予約可能
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-gray-200 inline-block" />満席
-        </span>
-        <span className="ml-auto">スロットをクリックして予約</span>
       </div>
     </div>
   );
@@ -486,59 +464,39 @@ export default function BookingPage() {
     slots.length === 0 || slots.every((s) => getSubSlots(s, 10).length === 0);
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      {/* ヒーローセクション */}
-      <div className="bg-gradient-to-br from-indigo-600 via-indigo-500 to-blue-500 text-white">
-        <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
-          <p className="text-indigo-200 text-sm font-medium tracking-wider uppercase mb-2">Online Booking</p>
-          <h1 className="text-3xl sm:text-4xl font-bold mb-3 leading-tight">
-            ご予約はこちらから
-          </h1>
-          <p className="text-indigo-100 text-base sm:text-lg max-w-lg leading-relaxed">
-            ご希望の日時をカレンダーから選択し、必要事項をご入力ください。確認メールをお送りします。
-          </p>
-
-          {/* ステップ表示 */}
-          <div className="flex items-center gap-2 mt-6 text-sm text-indigo-200">
-            <span className="flex items-center gap-1.5">
-              <span className="w-5 h-5 rounded-full bg-white/20 text-white text-xs font-bold flex items-center justify-center">1</span>
-              日時を選ぶ
-            </span>
-            <span className="text-indigo-400">→</span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-5 h-5 rounded-full bg-white/20 text-white text-xs font-bold flex items-center justify-center">2</span>
-              情報を入力
-            </span>
-            <span className="text-indigo-400">→</span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-5 h-5 rounded-full bg-white/20 text-white text-xs font-bold flex items-center justify-center">3</span>
-              予約完了
-            </span>
+    <main className="min-h-screen bg-gray-50">
+      {/* ヘッダー */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div>
+            <h1 className="text-base font-semibold text-gray-900">ご予約</h1>
+            <p className="text-xs text-gray-400">日時を選択して予約してください</p>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-gray-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+            受付中
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-3xl mx-auto px-4 py-5">
         {/* 予約完了バナー */}
         {succeeded && bookedSlot && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 mb-6 flex items-start gap-4">
-            <span className="text-3xl">🎉</span>
+          <div className="bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3 mb-4 flex items-center gap-3">
+            <span className="text-emerald-500 text-lg">✓</span>
             <div>
-              <p className="font-semibold text-emerald-800 text-base">予約が完了しました！</p>
-              <p className="text-emerald-600 text-sm mt-0.5">
+              <p className="text-sm font-medium text-emerald-800">予約が完了しました</p>
+              <p className="text-xs text-emerald-600 mt-0.5">
                 {fmtDate(bookedSlot.start)}　{fmtTime(bookedSlot.start)} 〜 {fmtTime(bookedSlot.end)}
               </p>
-              <p className="text-emerald-500 text-xs mt-1">確認メールをお送りしました。</p>
             </div>
           </div>
         )}
 
-        {/* 空き時間なし */}
         {noSlots ? (
-          <div className="text-center py-24">
-            <p className="text-5xl mb-4">📭</p>
-            <p className="text-gray-500 text-lg font-medium">現在、空き時間がありません</p>
-            <p className="text-gray-400 text-sm mt-1">しばらく後にまたご確認ください。</p>
+          <div className="text-center py-20">
+            <p className="text-gray-400 text-sm">現在、空き時間がありません</p>
+            <p className="text-gray-300 text-xs mt-1">しばらく後にまたご確認ください。</p>
           </div>
         ) : (
           <BookingCalendar slots={slots} onSelect={setSelectedAvail} />
