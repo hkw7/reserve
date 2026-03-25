@@ -12,14 +12,12 @@ type Availability = {
 };
 
 const HOUR_HEIGHT = 64;
-const DAY_LABELS = ["月", "火", "水", "木", "金", "土", "日"];
+const DAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
 const MIN_SLOT_MINUTES = 10;
 
-function getMonday(date: Date) {
+function getSunday(date: Date) {
   const d = new Date(date);
-  const day = d.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  d.setDate(d.getDate() + diff);
+  d.setDate(d.getDate() - d.getDay());
   d.setHours(0, 0, 0, 0);
   return d;
 }
@@ -39,7 +37,7 @@ export function CalendarView({
   onDelete: (id: string) => void;
   onAddSlot: (day: Date, startMin: number, endMin: number) => void;
 }) {
-  const [weekStart, setWeekStart] = useState(() => getMonday(new Date()));
+  const [weekStart, setWeekStart] = useState(() => getSunday(new Date()));
   const scrollRef = useRef<HTMLDivElement>(null);
   const minHourRef = useRef(8);
   const maxHourRef = useRef(20);
@@ -169,7 +167,7 @@ export function CalendarView({
       {/* ナビゲーション */}
       <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-200">
         <button onClick={prevWeek} className={btnBase}>← 前週</button>
-        <button onClick={() => setWeekStart(getMonday(new Date()))} className={btnBase}>今週</button>
+        <button onClick={() => setWeekStart(getSunday(new Date()))} className={btnBase}>今週</button>
         <button onClick={nextWeek} className={btnBase}>次週 →</button>
         <span className="ml-auto text-sm text-gray-600">
           {weekStart.toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" })}
@@ -183,8 +181,8 @@ export function CalendarView({
         <div className="border-r border-gray-200" />
         {days.map((day, i) => {
           const isToday = day.getTime() === today.getTime();
-          const isSat = i === 5;
-          const isSun = i === 6;
+          const isSun = i === 0;
+          const isSat = i === 6;
           const labelColor = isSun ? "text-red-500" : isSat ? "text-blue-500" : "text-gray-500";
           const numClass = isToday
             ? "bg-blue-600 text-white rounded-full w-7 h-7 flex items-center justify-center mx-auto"

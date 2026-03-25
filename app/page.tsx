@@ -13,13 +13,12 @@ type Availability = {
 type SubSlot = { start: Date; end: Date };
 
 const HOUR_HEIGHT = 64;
-const DAY_LABELS = ["月", "火", "水", "木", "金", "土", "日"];
+const DAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
 const DURATIONS = [10, 15, 20, 30, 45, 60, 90, 120];
 
-function getMonday(date: Date) {
+function getSunday(date: Date) {
   const d = new Date(date);
-  const day = d.getDay();
-  d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day));
+  d.setDate(d.getDate() - d.getDay());
   d.setHours(0, 0, 0, 0);
   return d;
 }
@@ -241,7 +240,7 @@ function BookingCalendar({
   slots: Availability[];
   onSelect: (avail: Availability) => void;
 }) {
-  const [weekStart, setWeekStart] = useState(() => getMonday(new Date()));
+  const [weekStart, setWeekStart] = useState(() => getSunday(new Date()));
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const days = Array.from({ length: 7 }, (_, i) => {
@@ -305,7 +304,7 @@ function BookingCalendar({
         <div className="salon-cal-controls">
           <button onClick={prevWeek} className="salon-nav-btn">‹</button>
           <button
-            onClick={() => setWeekStart(getMonday(new Date()))}
+            onClick={() => setWeekStart(getSunday(new Date()))}
             className="salon-today-btn"
           >
             今週
@@ -330,7 +329,7 @@ function BookingCalendar({
         <div className="salon-time-col-header" />
         {days.map((day, i) => {
           const isToday = day.getTime() === today.getTime();
-          const isSat = i === 5, isSun = i === 6;
+          const isSun = i === 0, isSat = i === 6;
           return (
             <div
               key={i}
